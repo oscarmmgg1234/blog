@@ -2,7 +2,7 @@ import axios from "axios";
 
 export class API {
   constructor() {
-    this.baseUrl = "https://oscarblogs.com";
+    this.baseUrl = "https://blogbackend.precisionstock.io";
   }
   //"http://13.64.149.30:3000";
   async getBlogEntries() {
