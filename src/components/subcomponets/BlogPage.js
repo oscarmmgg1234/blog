@@ -281,8 +281,9 @@ const BlogPage = () => {
               onChange={(e) =>
                 setNewComment({ ...newComment, author: e.target.value })
               }
+              
             />
-            
+
           </Form.Group>
 
           <Form.Group controlId="formComment" className="mt-2">
