@@ -564,6 +564,7 @@ const CreateBlogEntry = () => {
                   <option value="go">Go</option>
                   <option value="ruby">Ruby</option>
                   <option value="php">PHP</option>
+                  
                 </Form.Select>
               </>
             )}
