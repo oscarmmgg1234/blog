@@ -1,94 +1,244 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 
-const Home = () => (
-  <div style={{ maxWidth: "900px", margin: "0 auto", lineHeight: "1.7" }}>
-    <h1>Welcome</h1>
+/**
+ * Home page goals:
+ * - not a resume
+ * - signal depth + systems thinking
+ * - show visitors what to read first
+ *
+ * Replace the placeholder links when your routes exist.
+ */
 
-    <p>
-      This is a technical blog, but not in the narrow sense.  
-      It’s a space where software, systems, mathematics, and meaning intersect.
-    </p>
+const TOPICS = [
+  {
+    key: "systems",
+    title: "Systems & Architecture",
+    desc: "Event-driven design, queues, contracts, reliability, and why systems fail in the real world.",
+  },
+  {
+    key: "info",
+    title: "Information & Entropy",
+    desc: "Compression, structure, and how meaning survives noise — in data and in decisions.",
+  },
+  {
+    key: "dsp",
+    title: "Signals & DSP",
+    desc: "Signal vs noise, transforms, filters, and the math that shapes perception.",
+  },
+  {
+    key: "ai",
+    title: "AI (as a system)",
+    desc: "Not just models — deployment, evaluation, feedback loops, and product reality.",
+  },
+];
 
-    <p>
-      I’m interested in how complex systems behave — whether that system is a
-      distributed backend, an inventory model, an information pipeline, or a
-      human mind trying to make sense of reality.
-    </p>
+const FEATURED = [
+  {
+    title: "Start Here: How I Think About Building Systems",
+    blurb:
+      "A short map of the themes behind this blog: structure, constraints, and meaning inside complexity.",
+    href: "/blog/start-here", // TODO: update when this post exists
+    tag: "Start Here",
+  },
+  {
+    title: "Event-Driven Inventory: From Webhooks to Truth",
+    blurb:
+      "How I model product relationships and keep state sane when events arrive out of order.",
+    href: "/blog/event-driven-inventory", // TODO: update
+    tag: "Architecture",
+  },
+  {
+    title: "Entropy as a Design Tool",
+    blurb:
+      "A practical lens: what entropy means for APIs, data shape, and operational complexity.",
+    href: "/blog/entropy-design-tool", // TODO: update
+    tag: "Theory → Practice",
+  },
+];
 
-    <h2>What I Explore</h2>
+const Home = () => {
+  const [topic, setTopic] = useState("systems");
 
-    <p>
-      My interests orbit around:
-    </p>
+  const activeTopic = useMemo(
+    () => TOPICS.find((t) => t.key === topic) || TOPICS[0],
+    [topic]
+  );
 
-    <ul>
-      <li>Backend and systems engineering</li>
-      <li>Event-driven architectures and distributed systems</li>
-      <li>Information theory, entropy, and structure</li>
-      <li>Signals, noise, and how meaning survives compression</li>
-      <li>AI systems — not just models, but how they fit into real systems</li>
-    </ul>
+  return (
+    <div style={{ maxWidth: 960, margin: "0 auto", padding: "32px 18px", lineHeight: 1.7 }}>
+      {/* HERO */}
+      <header style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 40, margin: 0 }}>Notes on Systems, Meaning, and Reality</h1>
 
-    <p>
-      I’m less interested in tools as identities and more interested in how ideas
-      propagate through systems. Languages and frameworks change — patterns
-      persist.
-    </p>
+        <p style={{ fontSize: 18, marginTop: 10, maxWidth: 820 }}>
+          I build software — but I’m mostly obsessed with how <em>complex systems</em> behave:
+          when signals get noisy, when assumptions leak, and when structure is the difference
+          between chaos and clarity.
+        </p>
 
-    <h2>Background</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 16 }}>
+          <a
+            href="/blog"
+            style={{
+              padding: "10px 14px",
+              border: "1px solid #222",
+              borderRadius: 10,
+              textDecoration: "none",
+              color: "inherit",
+              fontWeight: 600,
+            }}
+          >
+            Browse Posts
+          </a>
 
-    <p>
-      I have a formal education in computer science and hands-on experience
-      building real production systems — including inventory platforms that model
-      non-trivial product relationships and event flows.
-    </p>
+          <a
+            href="/blog/start-here"
+            style={{
+              padding: "10px 14px",
+              borderRadius: 10,
+              textDecoration: "none",
+              color: "white",
+              background: "#222",
+              fontWeight: 600,
+            }}
+          >
+            Start Here
+          </a>
 
-    <p>
-      My learning process is iterative and systems-driven: understand the theory,
-      build something concrete, observe where reality pushes back, refine.
-    </p>
+          <a
+            href="/about"
+            style={{
+              padding: "10px 14px",
+              border: "1px solid #999",
+              borderRadius: 10,
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            About (education + what I’m looking for)
+          </a>
+        </div>
 
-    <h2>What I’m Working Toward</h2>
+        <p style={{ marginTop: 14, opacity: 0.85 }}>
+          If you like posts that connect implementation to fundamentals — you’ll feel at home here.
+        </p>
+      </header>
 
-    <p>
-      Right now, I’m focused on deepening my backend and systems expertise while
-      continuing to explore AI and information-centric problems.
-    </p>
+      {/* TOPIC PICKER */}
+      <section style={{ marginBottom: 30 }}>
+        <h2 style={{ marginBottom: 10 }}>What I’m exploring right now</h2>
 
-    <p>
-      I’m looking for roles where:
-    </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
+          {TOPICS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTopic(t.key)}
+              style={{
+                padding: "8px 12px",
+                borderRadius: 999,
+                border: topic === t.key ? "1px solid #222" : "1px solid #bbb",
+                background: topic === t.key ? "#222" : "transparent",
+                color: topic === t.key ? "white" : "inherit",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              {t.title}
+            </button>
+          ))}
+        </div>
 
-    <ul>
-      <li>Complexity is embraced, not hidden</li>
-      <li>Systems are designed thoughtfully, not patched reactively</li>
-      <li>Engineers are encouraged to reason, not just implement</li>
-    </ul>
+        <div
+          style={{
+            border: "1px solid #e0e0e0",
+            borderRadius: 14,
+            padding: 16,
+            background: "#fafafa",
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 6 }}>{activeTopic.title}</div>
+          <div style={{ opacity: 0.9 }}>{activeTopic.desc}</div>
 
-    <p>
-      Long-term, I’m interested in contributing to work that sits closer to
-      foundations — where software, math, and theory meet practical impact.
-    </p>
+          <div style={{ marginTop: 12, opacity: 0.9 }}>
+            <span style={{ fontWeight: 700 }}>Why this matters:</span>{" "}
+            I’m not collecting facts — I’m building a mental model that transfers across domains.
+          </div>
+        </div>
+      </section>
 
-    <h2>About This Blog</h2>
+      {/* FEATURED POSTS */}
+      <section style={{ marginBottom: 34 }}>
+        <h2 style={{ marginBottom: 12 }}>Featured reads</h2>
 
-    <p>
-      Posts here may include:
-    </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+          {FEATURED.map((p) => (
+            <a
+              key={p.title}
+              href={p.href}
+              style={{
+                display: "block",
+                border: "1px solid #e0e0e0",
+                borderRadius: 14,
+                padding: 16,
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+                <div style={{ fontWeight: 800 }}>{p.title}</div>
+                <span
+                  style={{
+                    fontSize: 12,
+                    padding: "4px 8px",
+                    borderRadius: 999,
+                    border: "1px solid #bbb",
+                    opacity: 0.9,
+                    whiteSpace: "nowrap",
+                    height: "fit-content",
+                  }}
+                >
+                  {p.tag}
+                </span>
+              </div>
 
-    <ul>
-      <li>Technical deep dives</li>
-      <li>Architecture notes and design tradeoffs</li>
-      <li>Explorations of theory and abstraction</li>
-      <li>Reflections on building real systems under constraint</li>
-    </ul>
+              <div style={{ marginTop: 8, opacity: 0.9 }}>{p.blurb}</div>
+            </a>
+          ))}
+        </div>
+      </section>
 
-    <p>
-      If you’re here looking for quick tutorials, this may feel slow.
-      If you’re here because you enjoy thinking deeply about how things actually
-      work — welcome.
-    </p>
-  </div>
-);
+      {/* JOB / DIRECTION */}
+      <section
+        style={{
+          borderTop: "1px solid #eee",
+          paddingTop: 20,
+          marginTop: 18,
+          opacity: 0.95,
+        }}
+      >
+        <h2 style={{ marginBottom: 10 }}>Where I’m headed</h2>
+
+        <p style={{ margin: 0, maxWidth: 900 }}>
+          I’m currently focused on backend + systems engineering and growing deeper into AI systems
+          and information-centric problems. I’m looking for roles where design tradeoffs are taken
+          seriously — reliability, clarity, and good architecture matter.
+        </p>
+
+        <p style={{ marginTop: 10, opacity: 0.9 }}>
+          If you’re here for collaboration, interviews, or just shared curiosity:{" "}
+          <a href="/about" style={{ fontWeight: 700 }}>
+            the About page
+          </a>{" "}
+          has my education + what I’m targeting next.
+        </p>
+      </section>
+
+      {/* FOOTER NOTE */}
+      <footer style={{ marginTop: 26, opacity: 0.75, fontSize: 13 }}>
+        Built for people who enjoy thinking. Minimal fluff. Honest tradeoffs.
+      </footer>
+    </div>
+  );
+};
 
 export default Home;
