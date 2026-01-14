@@ -271,7 +271,7 @@ const BlogPage = () => {
         )}
 
         <Form onSubmit={handleAddComment} className="mt-4">
-          
+
           <Form.Group controlId="formAuthor">
             <Form.Label>Author</Form.Label>
             <Form.Control
@@ -282,6 +282,7 @@ const BlogPage = () => {
                 setNewComment({ ...newComment, author: e.target.value })
               }
             />
+            
           </Form.Group>
 
           <Form.Group controlId="formComment" className="mt-2">
