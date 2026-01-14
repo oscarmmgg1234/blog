@@ -34,64 +34,6 @@ const Home = () => {
   return (
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "32px 18px", lineHeight: 1.7 }}>
       {/* TOP BAR (kept clickable) */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 12,
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 22,
-        }}
-      >
-        <div style={{ fontWeight: 800, letterSpacing: 0.2 }}>Oscy’s Lab Notes</div>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          {/* Keep these clickable, but don’t require posts/pages yet */}
-          <a
-            href="#explore"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              border: "1px solid #bbb",
-              textDecoration: "none",
-              color: "inherit",
-              fontWeight: 600,
-            }}
-          >
-            Explore
-          </a>
-
-          <a
-            href="#direction"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              border: "1px solid #bbb",
-              textDecoration: "none",
-              color: "inherit",
-              fontWeight: 600,
-            }}
-          >
-            Direction
-          </a>
-
-          <a
-            href="#soon"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 10,
-              border: "1px solid #222",
-              background: "#222",
-              color: "white",
-              textDecoration: "none",
-              fontWeight: 700,
-            }}
-          >
-            Coming Soon
-          </a>
-        </div>
-      </div>
 
       {/* HERO */}
       <header style={{ marginBottom: 26 }}>
