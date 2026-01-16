@@ -50,7 +50,26 @@ const Home = () => {
           down the real thinking: tradeoffs, models, failures, fixes, and the deeper theory behind
           the engineering.
         </p>
+        <p style={{ marginTop: 10 }}>
+  <a
+    href="https://oscarmmgg1234.github.io/Portfolio/"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      fontWeight: 700,
+      textDecoration: "none",
+      borderBottom: "2px solid #222",
+      paddingBottom: 2,
+      color: "inherit",
+    }}
+  >
+    → View my portfolio
+  </a>
+</p>
+
       </header>
+
+      
 
       {/* TOPIC PICKER */}
       <section id="explore" style={{ marginBottom: 30 }}>
