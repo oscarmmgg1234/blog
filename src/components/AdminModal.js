@@ -1,20 +1,33 @@
-// AdminModal.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form, Alert, Spinner } from "react-bootstrap";
 import { API } from "../Api";
-import { setAdminAuth } from "../auth/adminAuth"; // adjust path
+import { setAdminAuth } from "../auth/adminAuth";
 
 const api = new API();
+
+const BASE_DELAY_MS = 1000;   // 1s
+const MAX_DELAY_MS = 30000;  // 30s
 
 const AdminModal = ({ onClose }) => {
   const [password, setPassword] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const [attempts, setAttempts] = React.useState(0);
+  const [cooldownUntil, setCooldownUntil] = React.useState(0);
+
   const navigate = useNavigate();
+
+  const now = Date.now();
+  const inCooldown = now < cooldownUntil;
+  const cooldownSeconds = Math.ceil((cooldownUntil - now) / 1000);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (inCooldown) return;
+
     setIsSubmitting(true);
     setErrorMessage("");
 
@@ -22,17 +35,38 @@ const AdminModal = ({ onClose }) => {
       const response = await api.verifyAdminKey(password);
 
       if (response.success && response.token && response.expiresAt) {
-        setAdminAuth({ token: response.token, expiresAt: response.expiresAt });
+        // ✅ success → reset state
+        setAttempts(0);
+        setCooldownUntil(0);
 
+        setAdminAuth({ token: response.token, expiresAt: response.expiresAt });
         onClose();
         navigate("/admin");
-      } else {
-        setErrorMessage(response.message || "Incorrect password");
+        return;
       }
+
+      throw new Error("Invalid credentials");
     } catch (error) {
       const status = error?.response?.status;
-      if (status === 429) setErrorMessage("Too many attempts. Try again later.");
-      else setErrorMessage("An error occurred. Please try again.");
+
+      // increment attempts
+      setAttempts((prev) => {
+        const next = prev + 1;
+
+        const delay = Math.min(
+          BASE_DELAY_MS * Math.pow(2, next - 1),
+          MAX_DELAY_MS
+        );
+
+        setCooldownUntil(Date.now() + delay);
+        return next;
+      });
+
+      if (status === 429) {
+        setErrorMessage("Too many attempts. Try again later.");
+      } else {
+        setErrorMessage("Incorrect password.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -54,6 +88,7 @@ const AdminModal = ({ onClose }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoFocus
+              disabled={isSubmitting || inCooldown}
             />
           </Form.Group>
 
@@ -63,12 +98,32 @@ const AdminModal = ({ onClose }) => {
             </Alert>
           )}
 
-          <Button variant="primary" type="submit" disabled={isSubmitting} className="w-100">
+          {inCooldown && (
+            <Alert variant="warning">
+              Try again in <strong>{cooldownSeconds}s</strong>
+            </Alert>
+          )}
+
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting || inCooldown}
+            className="w-100"
+          >
             {isSubmitting ? (
               <>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="me-2"
+                />
                 Logging in...
               </>
+            ) : inCooldown ? (
+              `Locked (${cooldownSeconds}s)`
             ) : (
               "Login"
             )}
