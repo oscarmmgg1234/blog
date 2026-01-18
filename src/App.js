@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  HashRouter as Router,
-  Routes,
-  Route,
-  Link,
-  Navigate,
-} from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 
 import Home from "../src/components/Home";
@@ -15,17 +9,13 @@ import BlogPage from "./components/subcomponets/BlogPage";
 import CreateBlogEntry from "../src/components/subcomponets/CreateBlogEntry";
 import AdminModal from "../src/components/AdminModal";
 
+import { isAdminAuthed } from "./auth/adminAuth"; // adjust path
+
 function App() {
   const [showAdminModal, setShowAdminModal] = React.useState(false);
 
-  // Function to check authentication
-  const isAuthenticated = () => {
-    return localStorage.getItem("isAuthenticated") === "true";
-  };
-
   return (
     <Router>
-      {/* Navbar */}
       <Navbar bg="dark" variant="dark" expand="lg">
         <Container>
           <Navbar.Brand as={Link} to="/">
@@ -41,22 +31,15 @@ function App() {
                 Blog
               </Nav.Link>
             </Nav>
-            <Button
-              variant="outline-light"
-              onClick={() => setShowAdminModal(true)}
-            >
+            <Button variant="outline-light" onClick={() => setShowAdminModal(true)}>
               Admin
             </Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      {/* Admin Modal */}
-      {showAdminModal && (
-        <AdminModal onClose={() => setShowAdminModal(false)} />
-      )}
+      {showAdminModal && <AdminModal onClose={() => setShowAdminModal(false)} />}
 
-      {/* Page Content */}
       <Container style={{ paddingTop: "20px" }}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -65,16 +48,9 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogPage />} />
 
-          {/* Protected Admin Route */}
           <Route
             path="/admin"
-            element={
-              isAuthenticated() ? (
-                <CreateBlogEntry />
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
+            element={isAdminAuthed() ? <CreateBlogEntry /> : <Navigate to="/" replace />}
           />
         </Routes>
       </Container>

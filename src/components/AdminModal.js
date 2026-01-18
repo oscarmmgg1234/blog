@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form, Alert, Spinner } from "react-bootstrap";
 import { API } from "../Api";
+import { setAdminAuth } from "../auth/adminAuth"; // adjust path
 
 const api = new API();
 
@@ -20,20 +21,18 @@ const AdminModal = ({ onClose }) => {
     try {
       const response = await api.verifyAdminKey(password);
 
-      if (response.success) {
-        // Set authentication flag in localStorage
-        localStorage.setItem("isAuthenticated", "true");
+      if (response.success && response.token && response.expiresAt) {
+        setAdminAuth({ token: response.token, expiresAt: response.expiresAt });
 
-        // Verification successful
         onClose();
         navigate("/admin");
       } else {
-        // Verification failed
         setErrorMessage(response.message || "Incorrect password");
       }
     } catch (error) {
-      console.error("Error verifying admin key:", error);
-      setErrorMessage("An error occurred. Please try again.");
+      const status = error?.response?.status;
+      if (status === 429) setErrorMessage("Too many attempts. Try again later.");
+      else setErrorMessage("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -46,7 +45,6 @@ const AdminModal = ({ onClose }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          {/* Password Input */}
           <Form.Group controlId="adminPassword" className="mb-3">
             <Form.Label>Password</Form.Label>
             <Form.Control
@@ -55,37 +53,20 @@ const AdminModal = ({ onClose }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoFocus
             />
           </Form.Group>
 
-          {/* Error Message */}
           {errorMessage && (
-            <Alert
-              variant="danger"
-              onClose={() => setErrorMessage("")}
-              dismissible
-            >
+            <Alert variant="danger" onClose={() => setErrorMessage("")} dismissible>
               {errorMessage}
             </Alert>
           )}
 
-          {/* Submit Button */}
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={isSubmitting}
-            className="w-100"
-          >
+          <Button variant="primary" type="submit" disabled={isSubmitting} className="w-100">
             {isSubmitting ? (
               <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  className="me-2"
-                />
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
                 Logging in...
               </>
             ) : (

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAdminToken, clearAdminAuth } from "./auth/adminAuth"; // adjust path
 
 export class API {
   constructor() {
@@ -25,34 +26,42 @@ export class API {
       throw error;
     }
   }
-  async pushNewEntry(formData, onUploadProgress) {
-    try {
-      const response = await axios.post(`${this.baseUrl}/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.lengthComputable && onUploadProgress) {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            onUploadProgress(percentCompleted);
-          }
-        },
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
+async pushNewEntry(formData, onUploadProgress) {
+  try {
+    const token = getAdminToken();
+
+    if (!token) {
+      const err = new Error("Not authenticated");
+      err.status = 401;
+      throw err;
     }
+
+    const response = await axios.post(`${this.baseUrl}/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable && onUploadProgress) {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          onUploadProgress(percentCompleted);
+        }
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    // If token expired / invalid, clear local auth so ProtectedRoute redirects next render
+    if (error?.response?.status === 401) {
+      clearAdminAuth();
+    }
+    throw error;
   }
+}
   async verifyAdminKey(key) {
-    try {
-      const response = await axios.post(`${this.baseUrl}/verify`, {
-        pass: key,
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await axios.post(`${this.baseUrl}/verify`, { pass: key });
+    return response.data; // { success, token, expiresAt }
   }
 }
